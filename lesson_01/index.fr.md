@@ -123,7 +123,7 @@ Voici notre première fonction SIMD :
 
 SECTION .text
 
-;static void add_values(const uint8_t *src, const uint8_t *src2)  
+;static void add_values(uint8_t *src, const uint8_t *src2)  
 INIT_XMM sse2  
 cglobal add_values, 2, 2, 2, src, src2   
     movu  m0, [srcq]  
@@ -150,7 +150,7 @@ SECTION .text
 Cela désigne la section où le code que vous voulez exécuter est placé. Cela contraste avec la section `.data`, où vous pouvez placer des données constantes.
 
 ```assembly
-;static void add_values(const uint8_t *src, const uint8_t *src2);  
+;static void add_values(uint8_t *src, const uint8_t *src2);  
 INIT_XMM sse2
 ```
 
