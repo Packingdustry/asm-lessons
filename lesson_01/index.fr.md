@@ -1,39 +1,39 @@
-**FFmpeg Assembly Language Leçon Un**
+**FFmpeg Assembly Language Leçon Une**
 
 **Introduction**
 
-Bienvenue dans la FFmpeg School of Assembly Language. Vous avez fait le premier pas dans le voyage le plus intéressant, le plus stimulant et le plus gratifiant de la programmation. Ces leçons vous donneront des bases sr la façon sur la manière l'assembleur est utilisée dns FFmpeg et vous ouvriront les yeux sur ce qui se passe réellement dans votre ordinateur...
+Bienvenue dans la FFmpeg School of Assembly Language. Vous avez fait le premier pas dans le voyage le plus intéressant, le plus stimulant et le plus gratifiant de la programmation. Ces leçons vous donneront des bases sur la façon et la manière dont l'assembleur est utilisée dans FFmpeg et vous ouvriront les yeux sur ce qui se passe réellement dans votre ordinateur...
 
 **Connaissances requises**
 
-* Connaissance en C, particulièrement les pointeurs. Si le C ne vous est pas familier, vous trouverez toutes les bases dans le livre [The C Programming Language](https://en.wikipedia.org/wiki/The_C_Programming_Language).
-* Mathématiques de lycée (scalaire vs vecteur, addition, multiplication, etc...)
+* Connaissance en C, particulièrement les pointeurs. Si vous n'êtes pas familier avec le C, vous trouverez toutes les bases dans le livre [The C Programming Language](https://en.wikipedia.org/wiki/The_C_Programming_Language).
+* Mathématiques de lycée (scalaire vs vecteur, addition, multiplication, etc.)
 
 **Qu'est ce que l'assembleur?**
 
-L'assembleur est un langage de programmation où le code que vous écrivez correponds direction à des instructions compréhensible par un CPU. L'assembleur lisible par l'Homme est, comme son nom l'indique, *assemblé* en données binaires, connu sous le nom de *langage machine*, que le CPU peut comprendre. Le code assembleur est souvent appelé "assembleur" ou "asm" en ambrégé.
+L'assembleur est un langage de programmation où le code que vous écrivez correpond directement à des instructions compréhensible par un CPU. L'assembleur lisible par l'Homme est, comme son nom l'indique, *assemblé* en données binaires, connu sous le nom de *langage machine*, que le CPU peut comprendre. Le code assembleur est souvent appelé "assembleur" ou "asm" en abrégé.
 
 La grand majorité de l'assembleur de FFmpeg est ce que l'on appelle *SIMD, Single Instruction Multiple Data (instruction unique, données multiples)*. SIMD est parfois désigné sous le terme de programmation vectorielle. Cela signifie qu'une instruction particulière opère sur plusieurs éléments de données simultanément. La plupart des langages de programmation traitent un seul élément de données à la fois, ce que l'on appelle la programmation scalaire.
 
 Comme vous l'avez peut-être deviné, SIMD se prête bien au traitement d'images, des vidéos et de l'audio, qui contiennent une grande quantité de données organisées séquentiellement en mémoire. Des instructions spécialisées dans le processeur nous aideront à traiter ces données séquentielles.
 
-Dans FFmpeg, vous verrez que les termes `fonction en assembleur`, `SIMD`, `vectorisation` sont utilisés de manière interchangeable. Ils désignent tous la même chose: écrire une fonction en assembleur à la main pour traiter plusieurs éléments de données en une seule fois. Certains projets peuvent aussi faire référence à des `noyaux en assembleur`.
+Dans FFmpeg, vous verrez que les termes `fonction en assembleur`, `SIMD` et `vectorisation` sont utilisés de manière interchangeable. Ils désignent tous la même chose : écrire une fonction en assembleur à la main pour traiter plusieurs éléments de données en une seule fois. Certains projets peuvent aussi faire référence à des `noyaux en assembleur`.
 
-Tout cela peut sembler compliqué, mais il est important de rappeler que des lycééns ont écrit de l'assembleur dans FFmpeg. Comme partout, l'apprentissage c'est 50% du jargon et 50% d'apprentissage réel.
+Tout cela peut sembler compliqué, mais il est important de rappeler que des lycéens ont écrit de l'assembleur dans FFmpeg. Comme partout, l'apprentissage c'est 50% du jargon et 50% d'apprentissage réel.
 
-**Pourquoi écrivons en assembleur ?**
+**Pourquoi écrivons-nous en assembleur ?**
 
 Pour rendre le traitement multimédia rapide. Il est très courant d'avoir une vitesse de traitement au moins 10 fois plus rapide en écrivant en assembleur, ce qui est d'autant plus important quand nous voulons lire des vidéos en temps réel sans saccade. Cela permet aussi d'économiser de l'énergie et d'étendre la durée de vie des batteries. Il est important de souligner que les fonctions d'encodage et de décodage sont parmi les fonctions les plus utilisés au monde, aussi bien par les utilisateurs finaux que par les multi-nationales dans leurs data-centers. Donc, même une petit amélioration apporte beaucoup.
 
 Vous verrez souvent, en ligne, des gens utiliser des *fonctions intrinsèques*, des fonctions ressemblants à du C mais qui sont en fait des instructions en assembleur utilisées pour pemettre un développement plus rapide. Dans FFmpeg, nous n'utilisons pas ce genre de fonctions, nous écrivons tout le code en assembleur à la main. C'est un point de discorde, mais les fonctions intrinsèques sont environ 10 à 15% plus lente que l'équivalent en assembleur écrit à la main (les partisans de ces fonctions ne seraient pas d'accord), tout dépend du compilateur. Pour FFmpeg, chaque amélioration compte, c'est pourquoi nous écrivons tout le code directement en assembleur. Un argument en notre faveur est l'utilisation de la `[notation hongroise](https://fr.wikipedia.org/wiki/Notation_hongroise)` dans les fonctions intrinsèques qui compliquent leur lecture.
 
-Aussi, vous verrez des référence à de l'*assembleur en ligne* (ou *assembleur inline*), c'est-à-dire n'utilisant pas de fonctions intrinsèques, à quelques endroits dans FFmpeg pour des raisons historiques, ou dans des projets comme le noyau Linux dans des scénarios d'utilisations très spécifiques. Ici, le code assembleur n'est pas dans un fichier séparé mais écrit directement dans des fichiers avec du code en C. Le point de vue majoritaire dans des projets comme FFmpeg est que ce code est difficile à lire, pas largement supporté par les compilateurs et difficile à maintenir.
+Aussi, vous verrez des références à de l'*assembleur en ligne* (ou *assembleur inline*), c'est-à-dire n'utilisant pas de fonctions intrinsèques, à quelques endroits dans FFmpeg pour des raisons historiques, ou dans des projets comme le noyau Linux dans des scénarios d'utilisations très spécifiques. Ici, le code assembleur n'est pas dans un fichier séparé mais écrit directement dans des fichiers avec du code en C. Le point de vue majoritaire dans des projets comme FFmpeg est que ce code est difficile à lire, mal supporté par les compilateurs et difficile à maintenir.
 
 Enfin, vous verrez beaucou d'experts auto-proclamés sur Internet disant que rien de tout cela est nécessaire et que le compilateur peut effectuer cette `vectorisation` pour vous. Dans une optique d'apprentissage, ignorez-les : des tests récents comme ceux présents sur le [projet dav1d](https://www.videolan.org/projects/dav1d.html) ont montrés un gain de vitesse d'environ x2 grâce à cette vectorisation automatique, tandis que pour des versions écrites à la main, ce gain montait à x8.
 
 **Les variétés d'assembleurs**
 
-Ces leçons se concentreront sur l'assembleur x86 64 bits. Aussi connu sous le nom d'amd64, bien qu'il continue de fonctionner sur les CPUs Intel. Il existe autant de types d'assembleurs que de CPUs comme ceux pour ARM ou RISC-V avec potentiellement des mises à jour de ces cours pour les inclure.
+Ces leçons se concentreront sur l'assembleur x86_64 bits. Aussi connu sous le nom d'amd64, bien qu'il fonctionne aussi sur les CPUs Intel. Il existe autant de types d'assembleurs que de CPUs comme ceux pour ARM ou RISC-V avec potentiellement des mises à jour de ces cours pour les inclure.
 
 Il existe deux types de syntaxes pour l'assembleur x86 que vous trouverez en ligne : AT&T et Intel. La première est plus ancienne et plus difficile à lire comparé à la seconde. Nous nous intéresserons à cette dernière.
 
@@ -43,9 +43,9 @@ Vous serez peut-être surpris d'entendre que des livres ou des ressources en lig
 
 Beaucoup de livres détaillent beaucoup différentes architectures d'ordinateur avant de détailler l'assembleur. De notre point de vue, c'est très bien si c'est ce que vous voulez apprendre, mais cela revient à vouloir étudier les moteurs avant d'apprendre à conduire une voiture.
 
-Une fois ceci dit, dans les parties suivantes, les diagrammes du livre `The Art of 64-bit assembly` montrant les instructions SIMD et leur comportement sous forme visuelle vous seront très utiles : [https://artofasm.randallhyde.com/](https://artofasm.randallhyde.com/)
+Ceci dit, dans les parties suivantes, les diagrammes du livre `The Art of 64-bit assembly` montrant les instructions SIMD et leur comportement sous forme visuelle vous seront très utiles : [https://artofasm.randallhyde.com/](https://artofasm.randallhyde.com/)
 
-Un serveur Discord est disponible pour répondre à vos questions:
+Un serveur Discord est disponible pour répondre à vos questions :
 [https://discord.com/invite/Ks5MhUhqfB](https://discord.com/invite/Ks5MhUhqfB)
 
 **Les registres**  
@@ -54,19 +54,19 @@ Les registres sont des zones du CPU où les données peuvent être traitées. Le
 
 **Registres à usage général**
 
-Le premier type de registre que nous allons rencontrer est connu sous le nom de Registre à Usage Générale (GPR). Les GPR sont appelés ainsi car ils peuvent contenir soit des données, une valeur allant jusqu'à 64-bits, soit une adresse mémoire (un pointeur). Une valeur dans un GPR peut être traitée par des opérations telles que l'addition, la multiplication, le décalage, etc...
+Le premier type de registre que nous allons rencontrer est connu sous le nom de Registre à Usage Général (GPR). Les GPR sont appelés ainsi car ils peuvent contenir soit des données, une valeur allant jusqu'à 64-bits, soit une adresse mémoire (un pointeur). Une valeur dans un GPR peut être traitée par des opérations telles que l'addition, la multiplication, le décalage, etc.
 
-Dans la plupart des livres sur l'assembleur, de nombreux chapitres entiers sont concsacrés aux subtilités des GPR, leur histoire, etc... Car les GPR ont joués un rôle important dans la programmation de systèmes d'exploitation, le reverse engineering, etc... Dans l'assembleur écrit pour FFmpeg, les GPR sont considérés comme des échafaudages et la plupart du temps, leur compléxités ne sont pas nécessaires et sont abstraites.
+Dans la plupart des livres sur l'assembleur, des chapitres entiers sont concsacrés aux subtilités des GPR, leur histoire, etc. Car les GPR ont joué un rôle important dans la programmation de systèmes d'exploitation, la rétro-ingénierie (reverse engineering), etc. Dans l'assembleur écrit pour FFmpeg, les GPR sont considérés comme des échafaudages et la plupart du temps, leurs compléxités ne sont pas nécessaires et sont abstraites.
 
 **Registres vectoriels**  
-Les registrs vectoriels (SIMD), comme leur nom le suggère, contiennent plusieurs éléments de données. Il existe différents types de registres vectoriels:
+Les registrs vectoriels (SIMD), comme leur nom le suggère, contiennent plusieurs éléments de données. Il existe différents types de registres vectoriels :
 
 * registres `mm` : des registres `MMX`, de taille 64-bits, historique et peu utilisés de nos jours
-* registres `xmm` : des registres `XMM`, de taille 128 bits, largement disponible
-* registres `ymm` : des registres `YMM`, de tailles 256 bits, avec quelques complications lors de leur utilisation
-* registres `zmm` : des registres `ZMM`, de tailles 512 bits, très peu disponible
+* registres `xmm` : des registres `XMM`, de taille 128 bits, largement disponibles
+* registres `ymm` : des registres `YMM`, de taille 256 bits, avec quelques complications lors de leur utilisation
+* registres `zmm` : des registres `ZMM`, de taille 512 bits, très peu disponibles
 
-La plupart des calculs de compression et de décompression vidéo sont basés sur des entiers, nous nous y limiterons. Voici un exemple d'un registre `XMM` de 16 octets:
+La plupart des calculs de compression et de décompression vidéo sont basés sur des entiers, nous nous y limiterons. Voici un exemple d'un registre `XMM` de 16 octets :
 
 | a | b | c | d | e | f | g | h | i | j | k | l | m | n | o | p |
 | :---- | :---- | :---- | :---- | :---- | :---- | :---- | :---- | :---- | :---- | :---- | :---- | :---- | :---- | :---- | :---- |
@@ -142,7 +142,7 @@ Passons en revue le code ligne par ligne :
 %include "x86inc.asm"
 ```
 
-Ce `header` développé dans les communautés x264, FFmpeg et dav1d pour fournir des axiliaires, des noms prédéfinis et des macros (comme `cglobal` ci-dessous) pour simpliflier l'écriture du code assembleur.
+C'est un `header` développé dans les communautés x264, FFmpeg et dav1d pour fournir des axiliaires, des noms prédéfinis et des macros (comme `cglobal` ci-dessous) pour simpliflier l'écriture du code assembleur.
 
 ```assembly
 SECTION .text
@@ -169,7 +169,7 @@ Passons en revue chaque élément de la ligne un par un :
 * Le paramètre suivant indique à x86util combien de registres `XMM` nous allons utiliser.
 * Les deux derniers paramètres sont les labels utilisés pour les arguments de la fonction `add_values`.
 
-Il est important de noter que le code plus ancien peut ne pas avoir les labels comme arguments de fonctions mais plutôt les adresses des registres GPR à la place, en utilisant `r0`, `r1`, etc...
+Il est important de noter que le code plus ancien peut ne pas avoir les labels comme arguments de fonctions mais plutôt les adresses des registres GPR à la place, en utilisant `r0`, `r1`, etc.
 
 ```assembly
     movu  m0, [srcq]  
