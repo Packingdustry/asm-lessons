@@ -87,10 +87,10 @@ Ou deux quadruples mots (entiers de 64 bits):
 
 
 Pour récapituler :
-* **b**ytes - données de 8 bits
-* **w**ords - données de 16 bits
-* **d**oublewords - données de 32 bits 
-* **q**uadwords - données de 64 bits
+* **b**ytes (octets) - données de 8 bits
+* **w**ords (mots) - données de 16 bits
+* **d**oublewords (doubles mots) - données de 32 bits 
+* **q**uadwords (quadruples mots) - données de 64 bits
 * **d**ouble **q**uadwords - données de 128 bits.
 
 Les caractères en gras seront important dans la suite.
