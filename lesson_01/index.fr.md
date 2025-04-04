@@ -54,7 +54,7 @@ Les registres sont des zones du CPU où les données peuvent être traitées. Le
 
 **Registres à usage général**
 
-Le premier type de registre que nous allons rencontrer est connu sous le nom de Registre à Usage Général (GPR). Les GPR sont appelés ainsi car ils peuvent contenir soit des données, une valeur allant jusqu'à 64-bits, soit une adresse mémoire (un pointeur). Une valeur dans un GPR peut être traitée par des opérations telles que l'addition, la multiplication, le décalage, etc.
+Le premier type de registre que nous allons rencontrer est connu sous le nom de Registre à Usage Général (GPR, *General-Purpose Register*). Les GPR sont appelés ainsi car ils peuvent contenir soit des données, une valeur allant jusqu'à 64-bits, soit une adresse mémoire (un pointeur). Une valeur dans un GPR peut être traitée par des opérations telles que l'addition, la multiplication, le décalage, etc.
 
 Dans la plupart des livres sur l'assembleur, des chapitres entiers sont concsacrés aux subtilités des GPR, leur histoire, etc. Car les GPR ont joué un rôle important dans la programmation de systèmes d'exploitation, la rétro-ingénierie (reverse engineering), etc. Dans l'assembleur écrit pour FFmpeg, les GPR sont considérés comme des échafaudages et la plupart du temps, leurs compléxités ne sont pas nécessaires et sont abstraites.
 
