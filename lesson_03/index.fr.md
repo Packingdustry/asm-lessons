@@ -4,28 +4,28 @@ Expliquons un peu plus de jargon et lisez bien cette petite leçon d'histoire.
 
 **Jeux d'instructions**
 
-Vous avez surêment prêté attention au fait que dans la leçon précédente, noud avons parlé de **SSE2** qui fait parti du jeu d'instructions **SIMD**. Quand une nouvelle génération de CPU sort sur le marché, elle peut être accompagnée de nouvelles instructions et quelques fois des registres de tailles plus grandes. L'histoire du jeu d'instruction x86 est tellement complexe qu'il en existe une version simplifiée (avec plusieurs sous histoires dans celle-ci):
+Vous avez sûrement prêté attention au fait que dans la leçon précédente, nous avons parlé de **SSE2** qui fait parti du jeu d'instructions **SIMD**. Quand une nouvelle génération de CPU sort sur le marché, elle peut être accompagnée de nouvelles instructions et quelques fois des registres de tailles plus grandes. L'histoire du jeu d'instruction x86 est tellement complexe qu'il en existe une version simplifiée (avec plusieurs sous histoires dans celle-ci) :
 
 * MMX - Lancée en 1997, la première version **SIMD** chez Intel Processors, registres de 64 bits, version historique.
 * SSE (Streaming SIMD Extensions) - Lancée en 1999, registres de 128 bits.
 * SSE2 - Lancée en 2000, plusieurs nouvelles instructions.
 * SSE3 - Lancée en 2004, premières instructions *horizontales*.
 * SSSE3 (Supplemental SSE3) - Lancée en 2006, ajout de nouvelles instructions dont la plus importante ```pshufb```, sans doute l'instruction la plus importante pour le traitement vidéo
-* SSE4 - Launchée en 2008, ajout de nombreuses nouvelles instructions, notamment les minimums et maximums en mode vectorisé.
-* AVX - Launchée en 2011, ajout de registres à 256 bits (uniquement pour les flottants) et d'une nouvelle syntaxe à trois opérandes.
-* AVX2 - Launchée en 2013, ajout de registres à 256 bits pour les registres pour les instructions entières.
+* SSE4 - Lancée en 2008, ajout de nombreuses nouvelles instructions, notamment les minimums et maximums en mode vectorisé.
+* AVX - Lancée en 2011, ajout de registres à 256 bits (uniquement pour les flottants) et d'une nouvelle syntaxe à trois opérandes.
+* AVX2 - Lancée en 2013, ajout de registres à 256 bits pour les registres pour les instructions entières.
 * AVX512 - Lancée en 2017, registres à 512 bits, nouvelle instruction de masquage. Leur utilisation dans FFmpeg était très limitée en raison de la diminution de la fréquence du CPU quand de nouvelles instructions étaient utilisées. Permutation complète de 512 bits avec ```vpermb```.
-* AVX512ICL - Lancé en 2019, suppression de la réduction de fréquence du processeur.
-* AVX10 - A venir.
+* AVX512ICL - Lancée en 2019, suppression de la réduction de fréquence du processeur.
+* AVX10 - À venir.
 
 Il est important de noter que des jeux d'instructions peuvent être supprimés ou ajoutés d'un CPU à l'autre. Par exemple, **AVX512** a été [supprimé](https://www.igorslab.de/en/intel-deactivated-avx-512-on-alder-lake-but-fully-questionable-interpretation-of-efficiency-news-editorial/), de manière controversé, dans la 12ème génération de CPU Intel. C'est pour cette raison que FFmpeg fait de la détection du CPU à l'exécution. FFmpeg détecte les capacités du processeur sur lequel il s'exécute.
 
-Comme vous l'avez vu dans l'exercice, les pointeurs de fonctions sont par défaut en **C** et sont remplacées par un jeu d'instruction particulier. Cela signifie que la détection est réalisée une fois et ne sera plus jamais requise. Cela contraste avec beaucoup d'applications propriétaires qui programment en dur dans leur code un jeu d'instruction rendant obsolète des ordinateurs parfaitement fonctionnels. Cela permet aussi d'activer ou de désactuver des fonctions optimisées à l'exécution. C'est l'un des plus grands avantages de l'open source.
+Comme vous l'avez vu dans l'exercice, les pointeurs de fonctions sont par défaut en **C** et sont remplacées par un jeu d'instruction particulier. Cela signifie que la détection est réalisée une fois et ne sera plus jamais requise. Cela contraste avec beaucoup d'applications propriétaires qui programment en dur dans leur code un jeu d'instruction rendant obsolète des ordinateurs parfaitement fonctionnels. Cela permet aussi d'activer ou de désactiver des fonctions optimisées à l'exécution. C'est l'un des plus grands avantages de l'open source.
 
-Des programmes comme FFmpeg sont utilisés par des milliards d'appareils autour du monde, certains d'entre eux sont peut-être très agés. Techniquement, FFmpeg est compatible avec des machines possédant uniquement le jeu d'instruction **SSE**, machines qui datent d'il y a 25 ans.
-Heureusement, **x86inc.ams** est captable de vous indiquer si une instruction n'est pas disponible dans un jeu d'instruction particulier.
+Des programmes comme FFmpeg sont utilisés par des milliards d'appareils autour du monde, certains d'entre eux sont peut-être très âgés. Techniquement, FFmpeg est compatible avec des machines possédant uniquement le jeu d'instruction **SSE**, machines qui datent d'il y a 25 ans.
+Heureusement, **x86inc.asm** est capable de vous indiquer si une instruction n'est pas disponible dans un jeu d'instruction particulier.
 
-Pour vous donner une idée des compatibilités, voici la disponibilité des jeux d'instructions selon le [Steam Survey](https://store.steampowered.com/hwsurvey/Steam-Hardware-Software-Survey-Welcome-to-Steam) en novembre 2024 (évidemment biaisé en faveur des joueurs):
+Pour vous donner une idée des compatibilités, voici la disponibilité des jeux d'instructions selon le [Steam Survey](https://store.steampowered.com/hwsurvey/Steam-Hardware-Software-Survey-Welcome-to-Steam) en novembre 2024 (évidemment biaisé en faveur des joueurs) :
 
 | Jeu d'instruction | Disponibilité |
 | :---- | :---- |
@@ -37,13 +37,13 @@ Pour vous donner une idée des compatibilités, voici la disponibilité des jeux
 | AVX2 | 94.44% |
 | AVX512 (AVX512 et AVX512ICL confondus) | 14.09% |
 
-Pour une application comme FFmpeg avec des milliards d'utilisateurs, même 0.1% d'entre eux représent un grand nombre d'utilisateurs et de rapports de bug en cas de problème. FFmpeg possède une grande infrastructure de tests pour tester chaque combinaison de CPU/ OS / compilateurs présentée sur [FATE testsuite](https://fate.ffmpeg.org/?query=subarch:x86_64%2F%2F). Chaque simple commit est exécuté sur des centaines de machines pour être certain que rien ne casse.
+Pour une application comme FFmpeg avec des milliards d'utilisateurs, même 0.1% d'entre eux représentent un grand nombre d'utilisateurs et de rapports de bug en cas de problème. FFmpeg possède une grande infrastructure de tests pour tester chaque combinaison de CPU/ OS / compilateurs présentée sur [FATE testsuite](https://fate.ffmpeg.org/?query=subarch:x86_64%2F%2F). Chaque simple commit est exécuté sur des centaines de machines pour être certain que rien ne casse.
 
-Inter fournit un manuel de jeu d'instruction détaillé ici: [https://www.intel.com/content/www/us/en/developer/articles/technical/intel-sdm.html](https://www.intel.com/content/www/us/en/developer/articles/technical/intel-sdm.html)
+Intel fournit un manuel de jeu d'instruction détaillé ici : [https://www.intel.com/content/www/us/en/developer/articles/technical/intel-sdm.html](https://www.intel.com/content/www/us/en/developer/articles/technical/intel-sdm.html)
 
-Cela peut être laborieux de chercher sur un PDF, une alternative en ligne est présente ici: [https://www.felixcloutier.com/x86/](https://www.felixcloutier.com/x86/)
+Cela peut être laborieux de chercher sur un PDF, une alternative en ligne est présente ici : [https://www.felixcloutier.com/x86/](https://www.felixcloutier.com/x86/)
 
-Il y a aussi une représentation visuelle des instructions SIMD disponible ici: [https://www.officedaytime.com/simd512e/](https://www.officedaytime.com/simd512e/)
+Il y a aussi une représentation visuelle des instructions SIMD disponible ici : [https://www.officedaytime.com/simd512e/](https://www.officedaytime.com/simd512e/)
 
 Une partie du défi de l'utilsation de l'assembleur x86 est de trouver la bonne instruction dont vous avez besoin. Dans certains cas, des instructions peuvent être utilisées dans des cas de figure pour lesquelles elles n'ont pas été faites originellement.
 
@@ -118,7 +118,7 @@ Notez que cela aligne uniquement le début de la section RODATA. Des octets de r
 
 Un autre sujet que nous avons évité jusqu'à présent est le débordement. Cela se produit, par exemple, lorsque la valeur d'un octet dépasse 255 après une opération comme l'addition ou la multiplication. Nous pouvons vouloir effectuer une opération où nous avons besoin d'une valeur intermédiaire plus grande qu'un octet (par exemple, des mots), ou potentiellement nous voulons laisser les données dans cette taille intermédiaire plus grande.
 
-Pour les octets non signés, c'est là que les instructions `punpcklbw` (décompacter des octets en mots dans le bas d'un paquets) et `punpckhbw` (décompacter des octets en mots dans le haut d'un paquets) interviennent.
+Pour les octets non signés, c'est là que les instructions `punpcklbw` (décompacter des octets en mots dans le bas d'un paquet) et `punpckhbw` (décompacter des octets en mots dans le haut d'un paquet) interviennent.
 
 Voyons comment fonctionne `punpcklbw`. La syntaxe pour la version SSE2 dans le manuel Intel est la suivante :
 
@@ -131,7 +131,7 @@ Le site web officedaytime.com ci-dessus a un bon diagramme montrant ce qui se pa
 
 ![What is this](image1.png)
 
-Vous pouvez voir que les octets sont entrelacés à partir de la moitié inférieure de chaque registre respectivement. Mais quel rapport cela a-t-il avec l'extension de plage ? Si le registre source est entièrement nul, cela entrelace les octets dans le registre de destination avec des zéros. C'est ce qu'on appelle l'*extension par zéro*, car les octets sont sans signe. punpckhbw peut être utilisé pour faire la même chose pour les octets supérieurs.
+Vous pouvez voir que les octets sont entrelacés à partir de la moitié inférieure de chaque registre respectivement. Mais quel rapport cela a-t-il avec l'extension de plage ? Si le registre source est entièrement nul, cela entrelace les octets dans le registre de destination avec des zéros. C'est ce qu'on appelle l'*extension par zéro*, car les octets sont sans signe. `punpckhbw` peut être utilisé pour faire la même chose pour les octets supérieurs.
 
 Voici un extrait montrant comment cela est fait :
 
@@ -184,7 +184,7 @@ for(int i = 0; i < 16; i++) {
 }
 ```
 
-Voici un exemple simple en assembleur:
+Voici un exemple simple en assembleur :
 
 ```assembly
 SECTION_DATA 64
