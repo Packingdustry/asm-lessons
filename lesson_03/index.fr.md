@@ -56,7 +56,7 @@ Nous utilisons `ptrdiff_t` pour la variable de largeur au lieu de `int` afin de 
 La fonction ci-dessous contient l’astuce des décalages de pointeur :
 
 ```assembly
-;static void add_values(const uint8_t *src, const uint8_t *src2, ptrdiff_t width)
+;static void add_values(uint8_t *src, const uint8_t *src2, ptrdiff_t width)
 INIT_XMM sse2
 cglobal add_values, 3, 3, 2, src, src2, width
    add srcq, widthq
